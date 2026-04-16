@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Booking - SehaTin</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-brand">🏥 SehaTin</div>
+    <div class="nav-links">
+      <a href="/">Beranda</a>
+      <a href="/booking">Booking</a>
+      <a href="/jadwal">Jadwal Poli</a>
+      <a href="/admin">Admin</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2>Form Booking Puskesmas</h2>
+
+    <% if (success) { %>
+      <div class="alert-success"><%= success %></div>
+    <% } %>
+    <% if (error) { %>
+      <div class="alert-error"><%= error %></div>
+    <% } %>
+
+    <form action="/booking" method="POST" enctype="multipart/form-data" class="form-card">
+      <div class="form-group">
+        <label>Nama Lengkap *</label>
+        <input type="text" name="nama" required placeholder="Masukkan nama lengkap">
+      </div>
+      <div class="form-group">
+        <label>NIK (Nomor KTP) *</label>
+        <input type="text" name="nik" required maxlength="16" placeholder="16 digit NIK">
+      </div>
+      <div class="form-group">
+        <label>Tanggal Booking *</label>
+        <input type="date" name="tanggal" required min="<%= new Date().toISOString().split('T')[0] %>">
+      </div>
+      <div class="form-group">
+        <label>Pilih Poli *</label>
+        <select name="poli" required>
+          <option value="">-- Pilih Poli --</option>
+          <% jadwal.forEach(j => { %>
+            <option value="<%= j.poli %>">Poli <%= j.poli %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Keluhan</label>
+        <textarea name="keluhan" rows="3" placeholder="Deskripsikan keluhan kamu..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Upload Foto KTP (opsional, tersimpan di S3)</label>
+        <input type="file" name="foto_ktp" accept="image/*,.pdf">
+      </div>
+      <button type="submit" class="btn-primary">Kirim Booking</button>
+    </form>
+  </div>
+</body>
+</html>

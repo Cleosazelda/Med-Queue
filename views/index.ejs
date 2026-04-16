@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SehaTin - Booking Puskesmas</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-brand">🏥 SehaTin</div>
+    <div class="nav-links">
+      <a href="/">Beranda</a>
+      <a href="/booking">Booking</a>
+      <a href="/jadwal">Jadwal Poli</a>
+      <a href="/admin">Admin</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <h1>Selamat Datang di SehaTin</h1>
+    <p>Booking layanan puskesmas lebih mudah, cepat, dan tanpa antri lama</p>
+    <a href="/booking" class="btn-primary">Booking Sekarang</a>
+  </div>
+
+  <div class="container">
+    <h2>Poli yang Tersedia</h2>
+    <div class="card-grid">
+      <% jadwal.forEach(j => { %>
+      <div class="card">
+        <h3>Poli <%= j.poli %></h3>
+        <p>👨‍⚕️ <%= j.dokter %></p>
+        <p>📅 <%= j.hari %></p>
+        <p>🕐 <%= j.jam_buka %> - <%= j.jam_tutup %></p>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 SehaTin — Sistem Booking Puskesmas Digital</p>
+  </footer>
+</body>
+</html>

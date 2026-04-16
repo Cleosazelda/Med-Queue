@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - SehaTin</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-brand">🏥 SehaTin</div>
+    <div class="nav-links">
+      <a href="/">Beranda</a>
+      <a href="/booking">Booking</a>
+      <a href="/jadwal">Jadwal Poli</a>
+      <a href="/admin">Admin</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2>Dashboard Admin — Daftar Booking</h2>
+    <p>Total booking: <strong><%= bookings.length %></strong></p>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Nama</th>
+          <th>NIK</th>
+          <th>Tanggal</th>
+          <th>Poli</th>
+          <th>Keluhan</th>
+          <th>KTP</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% bookings.forEach((b, i) => { %>
+        <tr>
+          <td><%= i + 1 %></td>
+          <td><%= b.nama %></td>
+          <td><%= b.nik %></td>
+          <td><%= new Date(b.tanggal).toLocaleDateString('id-ID') %></td>
+          <td><%= b.poli %></td>
+          <td><%= b.keluhan || '-' %></td>
+          <td>
+            <% if (b.foto_ktp) { %>
+              <a href="<%= b.foto_ktp %>" target="_blank">Lihat KTP</a>
+            <% } else { %>
+              -
+            <% } %>
+          </td>
+          <td>
+            <span class="badge badge-<%= b.status %>"><%= b.status %></span>
+          </td>
+          <td>
+            <form action="/admin/update-status" method="POST" style="display:inline">
+              <input type="hidden" name="id" value="<%= b.id %>">
+              <select name="status" onchange="this.form.submit()">
+                <option value="menunggu" <%= b.status==='menunggu'?'selected':'' %>>Menunggu</option>
+                <option value="dikonfirmasi" <%= b.status==='dikonfirmasi'?'selected':'' %>>Dikonfirmasi</option>
+                <option value="selesai" <%= b.status==='selesai'?'selected':'' %>>Selesai</option>
+                <option value="dibatalkan" <%= b.status==='dibatalkan'?'selected':'' %>>Dibatalkan</option>
+              </select>
+            </form>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
