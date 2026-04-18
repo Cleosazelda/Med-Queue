@@ -2,72 +2,267 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Admin - SehaTin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — MedQueue</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <nav>
-    <div class="nav-brand">🏥 SehaTin</div>
+
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="nav-brand-icon">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4z"/></svg>
+      </div>
+      <span class="nav-brand-name">Med<span>Queue</span></span>
+    </a>
     <div class="nav-links">
-      <a href="/">Beranda</a>
-      <a href="/booking">Booking</a>
-      <a href="/jadwal">Jadwal Poli</a>
-      <a href="/admin">Admin</a>
+      <a href="/" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Beranda</span>
+      </a>
+      <a href="/booking" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+        <span>Booking</span>
+      </a>
+      <a href="/jadwal" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+        <span>Jadwal Poli</span>
+      </a>
+      <a href="/admin" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+        <span>Admin</span>
+      </a>
+    </div>
+    <div class="nav-cta">
+      <span style="font-size:.8rem;color:var(--clr-text-3);background:var(--clr-surface-2);padding:5px 12px;border-radius:var(--radius-full);border:1px solid var(--clr-border)">
+        🔒 Admin Panel
+      </span>
     </div>
   </nav>
 
-  <div class="container">
-    <h2>Dashboard Admin — Daftar Booking</h2>
-    <p>Total booking: <strong><%= bookings.length %></strong></p>
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Nama</th>
-          <th>NIK</th>
-          <th>Tanggal</th>
-          <th>Poli</th>
-          <th>Keluhan</th>
-          <th>KTP</th>
-          <th>Status</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% bookings.forEach((b, i) => { %>
-        <tr>
-          <td><%= i + 1 %></td>
-          <td><%= b.nama %></td>
-          <td><%= b.nik %></td>
-          <td><%= new Date(b.tanggal).toLocaleDateString('id-ID') %></td>
-          <td><%= b.poli %></td>
-          <td><%= b.keluhan || '-' %></td>
-          <td>
-            <% if (b.foto_ktp) { %>
-              <a href="<%= b.foto_ktp %>" target="_blank">Lihat KTP</a>
-            <% } else { %>
-              -
-            <% } %>
-          </td>
-          <td>
-            <span class="badge badge-<%= b.status %>"><%= b.status %></span>
-          </td>
-          <td>
-            <form action="/admin/update-status" method="POST" style="display:inline">
-              <input type="hidden" name="id" value="<%= b.id %>">
-              <select name="status" onchange="this.form.submit()">
-                <option value="menunggu" <%= b.status==='menunggu'?'selected':'' %>>Menunggu</option>
-                <option value="dikonfirmasi" <%= b.status==='dikonfirmasi'?'selected':'' %>>Dikonfirmasi</option>
-                <option value="selesai" <%= b.status==='selesai'?'selected':'' %>>Selesai</option>
-                <option value="dibatalkan" <%= b.status==='dibatalkan'?'selected':'' %>>Dibatalkan</option>
-              </select>
-            </form>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div>
+        <div class="page-header-breadcrumb">
+          <a href="/">Beranda</a>
+          <span>›</span>
+          <span>Admin Dashboard</span>
+        </div>
+        <h1 class="page-header-title">Dashboard Admin</h1>
+        <p class="page-header-sub">Kelola dan pantau semua booking pasien puskesmas</p>
+      </div>
+      <a href="/booking" class="btn btn-primary btn-sm">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        Tambah Booking
+      </a>
+    </div>
   </div>
+
+  <div class="admin-layout">
+
+    <%
+      const total    = bookings.length;
+      const waiting  = bookings.filter(b => b.status === 'menunggu').length;
+      const confirmed= bookings.filter(b => b.status === 'dikonfirmasi').length;
+      const done     = bookings.filter(b => b.status === 'selesai').length;
+    %>
+
+    <!-- STAT CARDS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:#EFF6FF">
+          <svg viewBox="0 0 24 24" fill="#3B82F6"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        </div>
+        <div>
+          <div class="stat-card-val"><%= total %></div>
+          <div class="stat-card-label">Total Booking</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:var(--clr-accent-lt)">
+          <svg viewBox="0 0 24 24" fill="var(--clr-accent)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        </div>
+        <div>
+          <div class="stat-card-val"><%= waiting %></div>
+          <div class="stat-card-label">Menunggu</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:var(--clr-info-lt)">
+          <svg viewBox="0 0 24 24" fill="var(--clr-info)"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+        </div>
+        <div>
+          <div class="stat-card-val"><%= confirmed %></div>
+          <div class="stat-card-label">Dikonfirmasi</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:var(--clr-success-lt)">
+          <svg viewBox="0 0 24 24" fill="var(--clr-success)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        </div>
+        <div>
+          <div class="stat-card-val"><%= done %></div>
+          <div class="stat-card-label">Selesai</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <span class="table-toolbar-title">Daftar Booking Pasien</span>
+        <div class="table-toolbar-right">
+          <div class="search-input-wrap">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" class="search-input" placeholder="Cari nama pasien…" id="searchInput" onkeyup="filterTable()">
+          </div>
+          <select class="form-control" style="width:auto;padding:7px 32px 7px 12px;font-size:.82rem" id="filterStatus" onchange="filterTable()">
+            <option value="">Semua Status</option>
+            <option value="menunggu">Menunggu</option>
+            <option value="dikonfirmasi">Dikonfirmasi</option>
+            <option value="selesai">Selesai</option>
+            <option value="dibatalkan">Dibatalkan</option>
+          </select>
+        </div>
+      </div>
+
+      <% if (bookings.length === 0) { %>
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.34C18 2.54 15.46 0 12 0S6 2.54 6 4.66c0 .46.11.9.18 1.34H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+        </div>
+        <h3>Belum ada booking</h3>
+        <p>Data booking pasien akan muncul di sini setelah ada pendaftaran masuk.</p>
+        <a href="/booking" class="btn btn-primary btn-sm" style="margin-top:8px">Buat Booking Pertama</a>
+      </div>
+      <% } else { %>
+      <div style="overflow-x:auto">
+        <table class="data-table" id="bookingTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Pasien</th>
+              <th>NIK</th>
+              <th>Tanggal</th>
+              <th>Poli</th>
+              <th>Keluhan</th>
+              <th>KTP</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% bookings.forEach((b, i) => {
+              const statusClass = {
+                'menunggu': 'status-menunggu',
+                'dikonfirmasi': 'status-dikonfirmasi',
+                'selesai': 'status-selesai',
+                'dibatalkan': 'status-dibatalkan'
+              }[b.status] || 'status-menunggu';
+              const dateFormatted = b.tanggal
+                ? new Date(b.tanggal).toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'})
+                : '-';
+            %>
+            <tr data-name="<%= (b.nama||'').toLowerCase() %>" data-status="<%= b.status %>">
+              <td style="color:var(--clr-text-3);font-size:.8rem"><%= i + 1 %></td>
+              <td>
+                <div class="td-name"><%= b.nama %></div>
+                <div class="td-sub">Terdaftar <%= new Date(b.created_at).toLocaleDateString('id-ID', {day:'2-digit',month:'short'}) %></div>
+              </td>
+              <td><span class="td-nik"><%= b.nik %></span></td>
+              <td style="font-size:.875rem;white-space:nowrap"><%= dateFormatted %></td>
+              <td>
+                <span style="background:var(--clr-primary-lt);color:var(--clr-primary);padding:3px 10px;border-radius:var(--radius-full);font-size:.78rem;font-weight:600">
+                  <%= b.poli %>
+                </span>
+              </td>
+              <td style="max-width:180px">
+                <span style="font-size:.82rem;color:var(--clr-text-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
+                  <%= b.keluhan || '—' %>
+                </span>
+              </td>
+              <td>
+                <% if (b.foto_ktp) { %>
+                <a href="<%= b.foto_ktp %>" target="_blank" rel="noopener" class="ktp-link">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                  Lihat
+                </a>
+                <% } else { %>
+                <span style="font-size:.78rem;color:var(--clr-text-3)">—</span>
+                <% } %>
+              </td>
+              <td>
+                <form action="/admin/update-status" method="POST" style="margin:0">
+                  <input type="hidden" name="id" value="<%= b.id %>">
+                  <select
+                    name="status"
+                    class="status-select <%= statusClass %>"
+                    onchange="this.form.submit()"
+                  >
+                    <option value="menunggu"     <%= b.status==='menunggu'     ?'selected':'' %>>Menunggu</option>
+                    <option value="dikonfirmasi" <%= b.status==='dikonfirmasi' ?'selected':'' %>>Dikonfirmasi</option>
+                    <option value="selesai"      <%= b.status==='selesai'      ?'selected':'' %>>Selesai</option>
+                    <option value="dibatalkan"   <%= b.status==='dibatalkan'   ?'selected':'' %>>Dibatalkan</option>
+                  </select>
+                </form>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-pagination">
+        <span class="table-pagination-info" id="paginationInfo">
+          Menampilkan <%= bookings.length %> data
+        </span>
+        <div style="font-size:.8rem;color:var(--clr-text-3)">
+          Terakhir diperbarui: <%= new Date().toLocaleString('id-ID', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) %>
+        </div>
+      </div>
+      <% } %>
+    </div>
+
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-brand-icon">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4z"/></svg>
+        </div>
+        <span class="footer-brand-name">MedQueue</span>
+      </div>
+      <span class="footer-copy">© 2025 MedQueue Admin Panel</span>
+    </div>
+  </footer>
+
+  <script>
+    function filterTable() {
+      const query  = document.getElementById('searchInput').value.toLowerCase();
+      const status = document.getElementById('filterStatus').value;
+      const rows   = document.querySelectorAll('#bookingTable tbody tr');
+      let visible  = 0;
+
+      rows.forEach(row => {
+        const name     = row.dataset.name || '';
+        const rowStatus= row.dataset.status || '';
+        const nameOk   = name.includes(query);
+        const statusOk = !status || rowStatus === status;
+        const show     = nameOk && statusOk;
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      const info = document.getElementById('paginationInfo');
+      if (info) info.textContent = `Menampilkan ${visible} dari ${rows.length} data`;
+    }
+
+    // Recolor status select on change
+    document.querySelectorAll('.status-select').forEach(sel => {
+      sel.addEventListener('change', function() {
+        this.className = 'status-select status-' + this.value;
+      });
+    });
+  </script>
 </body>
 </html>

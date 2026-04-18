@@ -2,62 +2,260 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Booking - SehaTin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking — MedQueue</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <nav>
-    <div class="nav-brand">🏥 SehaTin</div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="nav-brand-icon">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4z"/></svg>
+      </div>
+      <span class="nav-brand-name">Med<span>Queue</span></span>
+    </a>
     <div class="nav-links">
-      <a href="/">Beranda</a>
-      <a href="/booking">Booking</a>
-      <a href="/jadwal">Jadwal Poli</a>
-      <a href="/admin">Admin</a>
+      <a href="/" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Beranda</span>
+      </a>
+      <a href="/booking" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+        <span>Booking</span>
+      </a>
+      <a href="/jadwal" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+        <span>Jadwal Poli</span>
+      </a>
+      <a href="/admin" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+        <span>Admin</span>
+      </a>
     </div>
   </nav>
 
-  <div class="container">
-    <h2>Form Booking Puskesmas</h2>
-
-    <% if (success) { %>
-      <div class="alert-success"><%= success %></div>
-    <% } %>
-    <% if (error) { %>
-      <div class="alert-error"><%= error %></div>
-    <% } %>
-
-    <form action="/booking" method="POST" enctype="multipart/form-data" class="form-card">
-      <div class="form-group">
-        <label>Nama Lengkap *</label>
-        <input type="text" name="nama" required placeholder="Masukkan nama lengkap">
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div>
+        <div class="page-header-breadcrumb">
+          <a href="/">Beranda</a>
+          <span>›</span>
+          <span>Booking</span>
+        </div>
+        <h1 class="page-header-title">Form Pendaftaran</h1>
+        <p class="page-header-sub">Lengkapi data di bawah untuk membuat janji temu di puskesmas</p>
       </div>
-      <div class="form-group">
-        <label>NIK (Nomor KTP) *</label>
-        <input type="text" name="nik" required maxlength="16" placeholder="16 digit NIK">
-      </div>
-      <div class="form-group">
-        <label>Tanggal Booking *</label>
-        <input type="date" name="tanggal" required min="<%= new Date().toISOString().split('T')[0] %>">
-      </div>
-      <div class="form-group">
-        <label>Pilih Poli *</label>
-        <select name="poli" required>
-          <option value="">-- Pilih Poli --</option>
-          <% jadwal.forEach(j => { %>
-            <option value="<%= j.poli %>">Poli <%= j.poli %></option>
-          <% }) %>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Keluhan</label>
-        <textarea name="keluhan" rows="3" placeholder="Deskripsikan keluhan kamu..."></textarea>
-      </div>
-      <div class="form-group">
-        <label>Upload Foto KTP (opsional, tersimpan di S3)</label>
-        <input type="file" name="foto_ktp" accept="image/*,.pdf">
-      </div>
-      <button type="submit" class="btn-primary">Kirim Booking</button>
-    </form>
+    </div>
   </div>
+
+  <section class="section">
+    <div class="section-inner">
+      <div class="form-wrap">
+
+        <% if (success) { %>
+        <div class="alert alert-success">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 6.58l-9 9.71z"/></svg>
+          <div class="alert-body">
+            <div class="alert-title">Booking Berhasil!</div>
+            <div class="alert-sub"><%= success %></div>
+          </div>
+        </div>
+        <% } %>
+
+        <% if (error) { %>
+        <div class="alert alert-error">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <div class="alert-body">
+            <div class="alert-title">Terjadi Kesalahan</div>
+            <div class="alert-sub"><%= error %></div>
+          </div>
+        </div>
+        <% } %>
+
+        <form class="form-section" action="/booking" method="POST" enctype="multipart/form-data">
+          <div class="form-section-header">
+            <h2>Data Pendaftaran Pasien</h2>
+            <p>Pastikan data yang diisi sudah benar dan sesuai KTP</p>
+          </div>
+
+          <div class="form-body">
+            <div class="form-grid">
+
+              <!-- DATA DIRI -->
+              <div class="form-grid form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">
+                    Nama Lengkap <span class="required">*</span>
+                  </label>
+                  <input
+                    type="text" name="nama" required
+                    class="form-control"
+                    placeholder="Sesuai KTP"
+                    autocomplete="name"
+                  >
+                </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    NIK (Nomor KTP) <span class="required">*</span>
+                  </label>
+                  <input
+                    type="text" name="nik" required
+                    class="form-control"
+                    placeholder="16 digit NIK"
+                    maxlength="16" pattern="[0-9]{16}"
+                    title="NIK harus 16 digit angka"
+                  >
+                </div>
+              </div>
+
+              <div class="form-divider">
+                <span class="form-divider-label">Jadwal Kunjungan</span>
+              </div>
+
+              <!-- JADWAL -->
+              <div class="form-grid form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">
+                    Tanggal Kunjungan <span class="required">*</span>
+                  </label>
+                  <input
+                    type="date" name="tanggal" required
+                    class="form-control"
+                    min="<%= new Date().toISOString().split('T')[0] %>"
+                    id="tanggal-input"
+                  >
+                </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    Pilih Poli <span class="required">*</span>
+                  </label>
+                  <select name="poli" required class="form-control" id="poli-select">
+                    <option value="">— Pilih Poli —</option>
+                    <% jadwal.forEach(j => { %>
+                    <option value="<%= j.poli %>"><%= j.poli %></option>
+                    <% }) %>
+                  </select>
+                </div>
+              </div>
+
+              <!-- KELUHAN -->
+              <div class="form-group">
+                <label class="form-label">Keluhan / Keterangan</label>
+                <textarea
+                  name="keluhan" rows="3"
+                  class="form-control"
+                  placeholder="Deskripsikan keluhan atau alasan kunjungan kamu…"
+                  style="resize:vertical; min-height:90px"
+                ></textarea>
+              </div>
+
+              <div class="form-divider">
+                <span class="form-divider-label">Dokumen Identitas</span>
+              </div>
+
+              <!-- UPLOAD KTP -->
+              <div class="form-group">
+                <label class="form-label">Foto KTP</label>
+                <label style="cursor:pointer">
+                  <input
+                    type="file" name="foto_ktp"
+                    accept="image/jpeg,image/png,image/jpg,.pdf"
+                    id="file-input"
+                    style="display:none"
+                    onchange="handleFileChange(this)"
+                  >
+                  <div class="form-control form-control-file" id="file-drop-area">
+                    <div class="file-upload-area" id="upload-default">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      <div class="file-upload-label"><strong>Klik untuk unggah</strong> atau seret file ke sini</div>
+                      <div class="file-upload-sub">JPG, PNG, atau PDF • Maks. 5 MB</div>
+                    </div>
+                    <div class="file-upload-area" id="upload-selected" style="display:none">
+                      <svg viewBox="0 0 24 24" fill="var(--clr-success)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                      <div class="file-upload-label" id="file-name" style="color:var(--clr-primary)">file.jpg</div>
+                      <div class="file-upload-sub">Klik untuk mengganti file</div>
+                    </div>
+                  </div>
+                </label>
+                <p style="font-size:.78rem;color:var(--clr-text-3);margin-top:4px">
+                  Foto KTP digunakan untuk verifikasi identitas dan tersimpan aman di cloud storage.
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <div class="form-footer-note">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+              Data kamu terlindungi & tersimpan aman
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+              Kirim Pendaftaran
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-brand-icon">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4z"/></svg>
+        </div>
+        <span class="footer-brand-name">MedQueue</span>
+      </div>
+      <span class="footer-copy">© 2025 MedQueue — Sistem Booking Puskesmas Digital</span>
+    </div>
+  </footer>
+
+  <script>
+    // Auto-select poli from query param
+    const urlParams = new URLSearchParams(window.location.search);
+    const poliParam = urlParams.get('poli');
+    if (poliParam) {
+      const sel = document.getElementById('poli-select');
+      for (let opt of sel.options) {
+        if (opt.value === poliParam) { opt.selected = true; break; }
+      }
+    }
+
+    // File upload feedback
+    function handleFileChange(input) {
+      const def = document.getElementById('upload-default');
+      const sel = document.getElementById('upload-selected');
+      const fn  = document.getElementById('file-name');
+      if (input.files && input.files[0]) {
+        fn.textContent = input.files[0].name;
+        def.style.display = 'none';
+        sel.style.display = 'flex';
+      } else {
+        def.style.display = 'flex';
+        sel.style.display = 'none';
+      }
+    }
+
+    // Disable past weekends visual (optional UX)
+    const tanggalInput = document.getElementById('tanggal-input');
+    if (tanggalInput) {
+      tanggalInput.addEventListener('change', function() {
+        const d = new Date(this.value);
+        const day = d.getDay();
+        if (day === 0 || day === 6) {
+          this.setCustomValidity('Puskesmas tutup pada hari Sabtu dan Minggu. Pilih hari kerja.');
+          this.reportValidity();
+        } else {
+          this.setCustomValidity('');
+        }
+      });
+    }
+  </script>
 </body>
 </html>

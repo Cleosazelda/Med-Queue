@@ -3,42 +3,188 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SehaTin - Booking Puskesmas</title>
+  <title>MedQueue — Booking Puskesmas Digital</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <nav>
-    <div class="nav-brand">🏥 SehaTin</div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="nav-brand-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/><path d="M11 6h2v2h-2zM11 16h2v2h-2z" opacity="0"/><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4z"/></svg>
+      </div>
+      <span class="nav-brand-name">Med<span>Queue</span></span>
+    </a>
     <div class="nav-links">
-      <a href="/">Beranda</a>
-      <a href="/booking">Booking</a>
-      <a href="/jadwal">Jadwal Poli</a>
-      <a href="/admin">Admin</a>
+      <a href="/" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Beranda</span>
+      </a>
+      <a href="/booking" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+        <span>Booking</span>
+      </a>
+      <a href="/jadwal" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+        <span>Jadwal Poli</span>
+      </a>
+      <a href="/admin" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        <span>Admin</span>
+      </a>
+    </div>
+    <div class="nav-cta">
+      <a href="/booking" class="btn btn-primary btn-sm">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        Daftar Sekarang
+      </a>
     </div>
   </nav>
 
-  <div class="hero">
-    <h1>Selamat Datang di SehaTin</h1>
-    <p>Booking layanan puskesmas lebih mudah, cepat, dan tanpa antri lama</p>
-    <a href="/booking" class="btn-primary">Booking Sekarang</a>
-  </div>
-
-  <div class="container">
-    <h2>Poli yang Tersedia</h2>
-    <div class="card-grid">
-      <% jadwal.forEach(j => { %>
-      <div class="card">
-        <h3>Poli <%= j.poli %></h3>
-        <p>👨‍⚕️ <%= j.dokter %></p>
-        <p>📅 <%= j.hari %></p>
-        <p>🕐 <%= j.jam_buka %> - <%= j.jam_tutup %></p>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          Layanan Puskesmas Digital
+        </div>
+        <h1 class="hero-title">
+          Booking Puskesmas<br>
+          <em>Mudah & Tanpa Antri</em>
+        </h1>
+        <p class="hero-sub">
+          Daftar layanan kesehatan puskesmas secara online kapan saja. Pilih poli, tentukan jadwal, dan datang tepat waktu tanpa harus menunggu lama.
+        </p>
+        <div class="hero-actions">
+          <a href="/booking" class="btn btn-primary btn-lg">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+            Booking Sekarang
+          </a>
+          <a href="/jadwal" class="btn btn-ghost btn-lg">Lihat Jadwal Poli</a>
+        </div>
       </div>
-      <% }) %>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num"><%= jadwal.length %></div>
+          <div class="stat-label">Poli Tersedia</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">5×</div>
+          <div class="stat-label">Hari Layanan</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Gratis</div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <footer>
-    <p>© 2025 SehaTin — Sistem Booking Puskesmas Digital</p>
+  <!-- JADWAL POLI PREVIEW -->
+  <section class="section" style="background: var(--clr-surface); border-top: 1px solid var(--clr-border-2); border-bottom: 1px solid var(--clr-border-2);">
+    <div class="section-inner">
+      <div class="section-header" style="display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:12px">
+        <div>
+          <div class="section-label">Layanan Kami</div>
+          <h2 class="section-title">Poli yang Tersedia</h2>
+          <p class="section-sub">Pilih poli sesuai kebutuhanmu dan buat janji temu</p>
+        </div>
+        <a href="/jadwal" class="btn btn-outline btn-sm">Lihat Semua Jadwal →</a>
+      </div>
+      <div class="schedule-grid">
+        <% const icons = {
+          'Umum': '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>',
+          'Gigi': '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM9.29 16.29L5 12l1.41-1.41L9.29 13.46l8.29-8.29L19 6.58l-9.71 9.71z"/>',
+          'KIA': '<path d="M12 2c-4.42 0-8 3.58-8 8 0 5.25 8 14 8 14s8-8.75 8-14c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>',
+          'Lansia': '<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>'
+        }; %>
+        <% jadwal.forEach((j, idx) => { %>
+        <div class="card card-hover schedule-card">
+          <div class="schedule-card-icon">
+            <svg viewBox="0 0 24 24" fill="var(--clr-primary)" style="width:22px;height:22px">
+              <%- icons[j.poli] || icons['Umum'] %>
+            </svg>
+          </div>
+          <div class="schedule-poli">Poli <%= j.poli %></div>
+          <div class="schedule-doctor"><%= j.dokter %></div>
+          <div class="schedule-meta">
+            <div class="schedule-meta-row">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+              <%= j.hari %>
+            </div>
+            <div class="schedule-meta-row">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+              <%= j.jam_buka %> – <%= j.jam_tutup %> WIB
+            </div>
+          </div>
+          <div class="schedule-cta">
+            <a href="/booking?poli=<%= encodeURIComponent(j.poli) %>" class="btn btn-outline btn-sm" style="width:100%; justify-content:center">
+              Booking Poli Ini
+            </a>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARA BOOKING -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-header" style="text-align:center">
+        <div class="section-label">Cara Kerja</div>
+        <h2 class="section-title">Booking dalam 3 Langkah</h2>
+        <p class="section-sub">Proses cepat, mudah, dan sepenuhnya online</p>
+      </div>
+      <div class="features-grid">
+        <div class="card feature-card">
+          <div class="feature-icon" style="background:var(--clr-primary-lt)">
+            <svg viewBox="0 0 24 24" fill="var(--clr-primary)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+          </div>
+          <div class="feature-title">1. Isi Data Diri</div>
+          <div class="feature-desc">Masukkan nama lengkap, NIK, dan unggah foto KTP untuk verifikasi identitas pasien.</div>
+        </div>
+        <div class="card feature-card">
+          <div class="feature-icon" style="background:var(--clr-accent-lt)">
+            <svg viewBox="0 0 24 24" fill="var(--clr-accent)"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+          </div>
+          <div class="feature-title">2. Pilih Jadwal</div>
+          <div class="feature-desc">Tentukan tanggal kunjungan dan pilih poli yang sesuai dengan keluhanmu.</div>
+        </div>
+        <div class="card feature-card">
+          <div class="feature-icon" style="background:var(--clr-success-lt)">
+            <svg viewBox="0 0 24 24" fill="var(--clr-success)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          </div>
+          <div class="feature-title">3. Datang Tepat Waktu</div>
+          <div class="feature-desc">Tunjukkan nomor booking saat tiba di puskesmas dan langsung dilayani tanpa antri panjang.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-brand-icon">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4z"/></svg>
+        </div>
+        <span class="footer-brand-name">MedQueue</span>
+      </div>
+      <span class="footer-copy">© 2025 MedQueue — Sistem Booking Puskesmas Digital</span>
+      <div class="footer-links">
+        <a href="/booking">Booking</a>
+        <a href="/jadwal">Jadwal</a>
+        <a href="/admin">Admin</a>
+      </div>
+    </div>
   </footer>
+
 </body>
 </html>

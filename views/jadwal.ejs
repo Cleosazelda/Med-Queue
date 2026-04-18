@@ -2,44 +2,154 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Jadwal Poli - SehaTin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jadwal Poli — MedQueue</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <nav>
-    <div class="nav-brand">🏥 SehaTin</div>
+
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="nav-brand-icon">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4z"/></svg>
+      </div>
+      <span class="nav-brand-name">Med<span>Queue</span></span>
+    </a>
     <div class="nav-links">
-      <a href="/">Beranda</a>
-      <a href="/booking">Booking</a>
-      <a href="/jadwal">Jadwal Poli</a>
-      <a href="/admin">Admin</a>
+      <a href="/" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Beranda</span>
+      </a>
+      <a href="/booking" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+        <span>Booking</span>
+      </a>
+      <a href="/jadwal" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+        <span>Jadwal Poli</span>
+      </a>
+      <a href="/admin" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+        <span>Admin</span>
+      </a>
+    </div>
+    <div class="nav-cta">
+      <a href="/booking" class="btn btn-primary btn-sm">Booking Sekarang</a>
     </div>
   </nav>
 
-  <div class="container">
-    <h2>Jadwal Poli Puskesmas</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Poli</th>
-          <th>Dokter</th>
-          <th>Hari</th>
-          <th>Jam Buka</th>
-          <th>Jam Tutup</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% jadwal.forEach(j => { %>
-        <tr>
-          <td><strong>Poli <%= j.poli %></strong></td>
-          <td><%= j.dokter %></td>
-          <td><%= j.hari %></td>
-          <td><%= j.jam_buka %></td>
-          <td><%= j.jam_tutup %></td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div>
+        <div class="page-header-breadcrumb">
+          <a href="/">Beranda</a>
+          <span>›</span>
+          <span>Jadwal Poli</span>
+        </div>
+        <h1 class="page-header-title">Jadwal Pelayanan</h1>
+        <p class="page-header-sub">Informasi lengkap dokter, hari, dan jam pelayanan setiap poli</p>
+      </div>
+      <a href="/booking" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        Buat Booking
+      </a>
+    </div>
   </div>
+
+  <section class="section">
+    <div class="section-inner">
+
+      <!-- INFO BANNER -->
+      <div class="alert alert-info" style="margin-bottom:32px">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        <div class="alert-body">
+          <div class="alert-title">Informasi Layanan</div>
+          <div class="alert-sub">Puskesmas buka pada hari kerja (Senin–Jumat). Datanglah 15 menit sebelum jam layanan berakhir. Bawa KTP dan kartu BPJS.</div>
+        </div>
+      </div>
+
+      <div class="jadwal-grid">
+        <% jadwal.forEach((j, idx) => { %>
+        <div class="card jadwal-card" style="animation: fadeUp .4s ease both; animation-delay: <%= idx * 0.07 %>s">
+          <div class="jadwal-card-top">
+            <span class="jadwal-poli-badge">
+              <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4z"/></svg>
+              Poli <%= j.poli %>
+            </span>
+            <div class="jadwal-status" title="Aktif"></div>
+          </div>
+
+          <div class="jadwal-doctor-name"><%= j.dokter %></div>
+          <div class="jadwal-doctor-specialty">Dokter Poli <%= j.poli %></div>
+
+          <div style="margin-top: 16px;">
+            <div class="jadwal-info-row">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+              <span><strong>Hari:</strong> <%= j.hari %></span>
+            </div>
+            <div class="jadwal-info-row">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+              <span><strong>Jam:</strong> <%= j.jam_buka %> – <%= j.jam_tutup %> WIB</span>
+            </div>
+            <div class="jadwal-info-row">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+              <span>Puskesmas Kota</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px;">
+            <a href="/booking?poli=<%= encodeURIComponent(j.poli) %>" class="btn btn-primary btn-sm" style="width:100%; justify-content:center">
+              Booking Poli Ini →
+            </a>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FAQ MINI -->
+  <section class="section" style="background: var(--clr-surface); border-top: 1px solid var(--clr-border-2);">
+    <div class="section-inner">
+      <div class="section-header" style="text-align:center">
+        <div class="section-label">FAQ</div>
+        <h2 class="section-title">Pertanyaan Umum</h2>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px; max-width:800px; margin:0 auto">
+        <div class="card" style="padding:20px 22px">
+          <div style="font-weight:600; color:var(--clr-primary); margin-bottom:6px; font-size:.9rem">Apakah perlu BPJS?</div>
+          <div style="font-size:.85rem; color:var(--clr-text-2); line-height:1.6">Tidak wajib, namun pasien BPJS bisa mendapatkan layanan gratis. Pastikan BPJS aktif sebelum datang.</div>
+        </div>
+        <div class="card" style="padding:20px 22px">
+          <div style="font-weight:600; color:var(--clr-primary); margin-bottom:6px; font-size:.9rem">Berapa lama menunggu?</div>
+          <div style="font-size:.85rem; color:var(--clr-text-2); line-height:1.6">Dengan booking online, estimasi waktu tunggu jauh lebih singkat dibanding daftar langsung di tempat.</div>
+        </div>
+        <div class="card" style="padding:20px 22px">
+          <div style="font-weight:600; color:var(--clr-primary); margin-bottom:6px; font-size:.9rem">Bisa batalkan booking?</div>
+          <div style="font-size:.85rem; color:var(--clr-text-2); line-height:1.6">Hubungi admin puskesmas minimal 2 jam sebelum jadwal kunjungan untuk pembatalan.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-brand-icon">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4z"/></svg>
+        </div>
+        <span class="footer-brand-name">MedQueue</span>
+      </div>
+      <span class="footer-copy">© 2025 MedQueue — Sistem Booking Puskesmas Digital</span>
+    </div>
+  </footer>
+
+  <style>
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(14px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+  </style>
 </body>
 </html>
