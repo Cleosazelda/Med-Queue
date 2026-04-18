@@ -1,34 +1,14 @@
-name: Deploy Medqueue ke EC2
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Build Docker image
-      run: docker build -t Med-Queue .
-
-    - name: Deploy ke EC2 via SSH
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          # Pull code terbaru
-          cd /home/ubuntu
-          rm -rf Med-Queue
-          git clone https://github.com/${{ github.repository }} Med-Queue
+script: |
+          # Masuk ke direktori atau clone kalau belum ada
+          if [ ! -d "Med-Queue" ]; then
+            git clone https://github.com/${{ github.repository }} Med-Queue
+          fi
           cd Med-Queue
+          
+          # Tarik perubahan terbaru
+          git pull origin main
 
-          # Buat file .env dari secrets
+          # Buat file .env dari secrets (Hati-hati: jangan ada spasi di awal baris EOF)
           cat > .env << EOF
           DB_HOST=${{ secrets.DB_HOST }}
           DB_USER=${{ secrets.DB_USER }}
@@ -41,17 +21,11 @@ jobs:
           PORT=3000
           EOF
 
-          # Stop container lama
-          docker stop Med-Queue 2>/dev/null || true
-          docker rm Med-Queue 2>/dev/null || true
-
-          # Build dan jalankan container baru
-          docker build -t Med-Queue .
-          docker run -d \
-            --name Med-Queue \
-            --restart always \
-            -p 3000:3000 \
-            --env-file .env \
-            Med-Queue
+          # Rebuild dan Restart pake Docker Compose (lebih sakti)
+          # Kalau kamu tetep mau pake docker run manual, pastikan nama container unik
+          sudo docker stop Med-Queue-app || true
+          sudo docker rm Med-Queue-app || true
+          sudo docker build -t med-queue-img .
+          sudo docker run -d --name Med-Queue-app -p 3000:3000 --env-file .env med-queue-img
 
           echo "✅ Deploy berhasil!"
