@@ -18,25 +18,27 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            if [ ! -d "Med-Queue" ]; then
-              git clone https://github.com/${{ github.repository }} Med-Queue
-            fi
-            cd Med-Queue
-            git pull origin main
+                    cd /home/ubuntu/Med-Queue
+                    git pull origin main
 
-            cat > .env << EOF
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASS=${{ secrets.DB_PASS }}
-            DB_NAME=${{ secrets.DB_NAME }}
-            S3_BUCKET=${{ secrets.S3_BUCKET }}
-            AWS_REGION=${{ secrets.AWS_REGION }}
-            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            PORT=3000
-            EOF
+                    # Buat file .env
+                    cat > .env << EOF
+                    DB_HOST=${{ secrets.DB_HOST }}
+                    DB_USER=${{ secrets.DB_USER }}
+                    DB_PASS=${{ secrets.DB_PASS }}
+                    DB_NAME=${{ secrets.DB_NAME }}
+                    S3_BUCKET=${{ secrets.S3_BUCKET }}
+                    AWS_REGION=${{ secrets.AWS_REGION }}
+                    AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+                    AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                    PORT=3000
+                    EOF
 
-            sudo docker stop Med-Queue-app || true
-            sudo docker rm Med-Queue-app || true
-            sudo docker build -t med-queue-img .
-            sudo docker run -d --name Med-Queue-app -p 3000:3000 --env-file .env med-queue-img
+                    # JURUS SAKTI: Paksa matikan apa pun yang pakai port 3000
+                    sudo fuser -k 3000/tcp || true
+                    sudo docker stop Med-Queue-app || true
+                    sudo docker rm Med-Queue-app || true
+
+                    # Jalankan ulang
+                    sudo docker build -t med-queue-img .
+                    sudo docker run -d --name Med-Queue-app -p 3000:3000 --env-file .env med-queue-img
