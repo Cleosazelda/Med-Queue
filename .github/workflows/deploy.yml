@@ -18,27 +18,32 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-                    cd /home/ubuntu/Med-Queue
-                    git pull origin main
+            cd /home/ubuntu/Med-Queue
+            git pull origin main
 
-                    # Buat file .env
-                    cat > .env << EOF
-                    DB_HOST=${{ secrets.DB_HOST }}
-                    DB_USER=${{ secrets.DB_USER }}
-                    DB_PASS=${{ secrets.DB_PASS }}
-                    DB_NAME=${{ secrets.DB_NAME }}
-                    S3_BUCKET=${{ secrets.S3_BUCKET }}
-                    AWS_REGION=${{ secrets.AWS_REGION }}
-                    AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-                    AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                    PORT=3000
-                    EOF
+            # Buat file .env
+            cat > .env << EOF
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASS=${{ secrets.DB_PASS }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            S3_BUCKET=${{ secrets.S3_BUCKET }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            PORT=3000
+            EOF
 
-                    # JURUS SAKTI: Paksa matikan apa pun yang pakai port 3000
-                    sudo fuser -k 3000/tcp || true
-                    sudo docker stop Med-Queue-app || true
-                    sudo docker rm Med-Queue-app || true
+            # 1. Matikan kontainer apa pun yang namanya mirip Med-Queue
+            sudo docker ps -q --filter "name=Med-Queue" | xargs -r sudo docker stop
+            sudo docker ps -aq --filter "name=Med-Queue" | xargs -r sudo docker rm
+            
+            # 2. Paksa bunuh proses yang pake port 3000 (antisipasi proses zombie)
+            sudo fuser -k 3000/tcp || true
+            
+            # 3. Bersihkan sistem docker dikit biar gak penuh
+            sudo docker system prune -f
 
-                    # Jalankan ulang
-                    sudo docker build -t med-queue-img .
-                    sudo docker run -d --name Med-Queue-app -p 3000:3000 --env-file .env med-queue-img
+            # 4. Jalankan ulang
+            sudo docker build -t med-queue-img .
+            sudo docker run -d --name Med-Queue-app -p 3000:3000 --env-file .env med-queue-img
