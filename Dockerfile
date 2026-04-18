@@ -1,15 +1,18 @@
-FROM node:18-alpine
+# Gunakan node versi 20
+FROM node:20
 
+# Buat folder kerja di dalam kontainer
 WORKDIR /app
 
+# Copy package.json dan install library
 COPY package*.json ./
+RUN npm install
 
-RUN npm install --production
-
+# Copy semua file project kamu ke kontainer
 COPY . .
 
-RUN mkdir -p uploads
-
+# Beritahu port mana yang dibuka
 EXPOSE 3000
 
+# Jalankan aplikasi
 CMD ["node", "app.js"]

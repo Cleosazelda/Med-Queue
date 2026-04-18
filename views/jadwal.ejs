@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Jadwal Poli - SehaTin</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-brand">🏥 SehaTin</div>
+    <div class="nav-links">
+      <a href="/">Beranda</a>
+      <a href="/booking">Booking</a>
+      <a href="/jadwal">Jadwal Poli</a>
+      <a href="/admin">Admin</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2>Jadwal Poli Puskesmas</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Poli</th>
+          <th>Dokter</th>
+          <th>Hari</th>
+          <th>Jam Buka</th>
+          <th>Jam Tutup</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% jadwal.forEach(j => { %>
+        <tr>
+          <td><strong>Poli <%= j.poli %></strong></td>
+          <td><%= j.dokter %></td>
+          <td><%= j.hari %></td>
+          <td><%= j.jam_buka %></td>
+          <td><%= j.jam_tutup %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

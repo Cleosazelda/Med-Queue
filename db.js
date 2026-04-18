@@ -7,7 +7,10 @@ const pool = new Pool({
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   port: 5432,
-  ssl: { rejectUnauthorized: false } // wajib untuk RDS
+  // Tambahkan SSL agar bisa konek ke RDS dari luar/lokal
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 module.exports = pool;

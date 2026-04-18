@@ -1,0 +1,57 @@
+name: Deploy Medqueue ke EC2
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build Docker image
+      run: docker build -t Med-Queue .
+
+    - name: Deploy ke EC2 via SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          # Pull code terbaru
+          cd /home/ubuntu
+          rm -rf Med-Queue
+          git clone https://github.com/${{ github.repository }} Med-Queue
+          cd Med-Queue
+
+          # Buat file .env dari secrets
+          cat > .env << EOF
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASS=${{ secrets.DB_PASS }}
+          DB_NAME=${{ secrets.DB_NAME }}
+          S3_BUCKET=${{ secrets.S3_BUCKET }}
+          AWS_REGION=${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          PORT=3000
+          EOF
+
+          # Stop container lama
+          docker stop Med-Queue 2>/dev/null || true
+          docker rm Med-Queue 2>/dev/null || true
+
+          # Build dan jalankan container baru
+          docker build -t Med-Queue .
+          docker run -d \
+            --name Med-Queue \
+            --restart always \
+            -p 3000:3000 \
+            --env-file .env \
+            Med-Queue
+
+          echo "✅ Deploy berhasil!"
