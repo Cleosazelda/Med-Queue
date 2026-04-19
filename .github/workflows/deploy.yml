@@ -19,40 +19,42 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 1. Masuk ke folder project
-            cd /home/ubuntu/Med-Queue || exit
+                # 1. Masuk ke folder project
+                cd /home/ubuntu/Med-Queue || exit
 
-            # 2. Paksa Git untuk sinkron dengan GitHub (Hapus konflik lokal)
-            sudo git fetch --all
-            sudo git reset --hard origin/main
-            sudo git clean -fd
+                # 2. Paksa Git untuk sinkron dengan GitHub
+                sudo git fetch --all
+                sudo git reset --hard origin/main
+                sudo git clean -fd
 
-            # 3. Update file .env dari GitHub Secrets
-            cat > .env << EOF
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASS=${{ secrets.DB_PASS }}
-            DB_NAME=${{ secrets.DB_NAME }}
-            S3_BUCKET=${{ secrets.S3_BUCKET }}
-            AWS_REGION=${{ secrets.AWS_REGION }}
-            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            PORT=3000
-            EOF
+                # 3. HAPUS FILE .ENV LAMA & Buat baru
+                sudo rm -f .env
+                cat > .env << EOF
+                DB_HOST=${{ secrets.DB_HOST }}
+                DB_USER=${{ secrets.DB_USER }}
+                DB_PASS=${{ secrets.DB_PASS }}
+                DB_NAME=${{ secrets.DB_NAME }}
+                S3_BUCKET=${{ secrets.S3_BUCKET }}
+                AWS_REGION=${{ secrets.AWS_REGION }}
+                AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+                AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                PORT=3000
+                EOF
 
-            # 4. Bersihkan proses dan container lama
-            sudo fuser -k 3000/tcp || true
-            sudo docker stop Med-Queue-app || true
-            sudo docker rm Med-Queue-app || true
-            sudo docker system prune -f
+                # 4. Bersihkan proses dan container lama
+                sudo fuser -k 3000/tcp || true
+                sudo docker stop Med-Queue-app || true
+                sudo docker rm Med-Queue-app || true
+                
+                # 5. HAPUS SEMUA IMAGE LAMA BIAR BENAR-BENAR FRESH
+                sudo docker rmi med-queue-img || true
+                sudo docker system prune -af
 
-            # 5. Build dan jalankan ulang
-            sudo docker build --no-cache -t med-queue-img .
-            sudo docker run -d \
-              --name Med-Queue-app \
-              --restart always \
-              -p 3000:3000 \
-              --env-file .env \
-              med-queue-img
-
-            echo "✅ Deploy Berhasil dan Port 3000 Segar Kembali!"
+                # 6. Build dan jalankan ulang
+                sudo docker build --no-cache -t med-queue-img .
+                sudo docker run -d \
+                  --name Med-Queue-app \
+                  --restart always \
+                  -p 3000:3000 \
+                  --env-file .env \
+                  med-queue-img
