@@ -1,12 +1,16 @@
 const express = require('express');
 const db = require('./db');
 const path = require('path');
+const multer = require('multer'); // Tambahan: Import Multer
 require('dotenv').config();
 
 const app = express();
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+
+// Tambahan: Konfigurasi tempat Multer menyimpan file upload sementara
+const upload = multer({ dest: 'uploads/' });
 
 // Fungsi Inisialisasi Database (PostgreSQL version)
 async function initDB() {
@@ -72,9 +76,12 @@ app.get('/booking', async (req, res) => {
 });
 
 // Proses Booking (PostgreSQL pakai $1, $2, dst)
-app.post('/booking', async (req, res) => {
+// Tambahan: Sisipkan middleware upload.single('foto_ktp')
+app.post('/booking', upload.single('foto_ktp'), async (req, res) => {
   const { nama, nik, tanggal, poli, keluhan } = req.body;
-  const fotoUrl = req.file ? req.file.location : null; // Asumsi pakai S3/Multer
+  
+  // Mengambil path file yang diupload. Jika tidak ada file, nilainya null.
+  const fotoUrl = req.file ? req.file.path : null; 
 
   try {
     await db.query(
