@@ -1,21 +1,27 @@
 const express = require('express');
 const db = require('./db');
 const path = require('path');
-const multer = require('multer'); // Tambahan: Import Multer
+const multer = require('multer');
 require('dotenv').config();
 
 const app = express();
+
+// --- KONFIGURASI VIEW ENGINE & MIDDLEWARE ---
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
 
-// Tambahan: Konfigurasi tempat Multer menyimpan file upload sementara
+// Izin akses folder statis
+app.use(express.static('public')); 
+app.use('/uploads', express.static('uploads')); // Perbaikan: Agar foto KTP bisa diakses via URL
+
+// --- KONFIGURASI MULTER ---
+// Menyimpan file di folder 'uploads' di dalam server EC2
 const upload = multer({ dest: 'uploads/' });
 
-// Fungsi Inisialisasi Database (PostgreSQL version)
+// --- INISIALISASI DATABASE (PostgreSQL) ---
 async function initDB() {
   try {
-    // Buat tabel bookings
+    // Buat tabel bookings jika belum ada
     await db.query(`
       CREATE TABLE IF NOT EXISTS bookings (
         id SERIAL PRIMARY KEY,
@@ -30,7 +36,7 @@ async function initDB() {
       )
     `);
 
-    // Buat tabel jadwal
+    // Buat tabel jadwal jika belum ada
     await db.query(`
       CREATE TABLE IF NOT EXISTS jadwal (
         id SERIAL PRIMARY KEY,
@@ -42,7 +48,7 @@ async function initDB() {
       )
     `);
 
-    // Isi data awal jika kosong
+    // Isi data awal jadwal jika masih kosong
     const resJadwal = await db.query('SELECT COUNT(*) FROM jadwal');
     if (parseInt(resJadwal.rows[0].count) === 0) {
       await db.query(`
@@ -63,24 +69,31 @@ initDB();
 
 // --- ROUTES ---
 
-// Halaman Utama
+// 1. Halaman Beranda
 app.get('/', async (req, res) => {
-  const { rows: jadwal } = await db.query('SELECT * FROM jadwal');
-  res.render('index', { jadwal });
+  try {
+    const { rows: jadwal } = await db.query('SELECT * FROM jadwal');
+    res.render('index', { jadwal });
+  } catch (err) {
+    res.status(500).send('Error memuat beranda');
+  }
 });
 
-// Halaman Booking
+// 2. Halaman Form Booking
 app.get('/booking', async (req, res) => {
-  const { rows: jadwal } = await db.query('SELECT DISTINCT poli FROM jadwal');
-  res.render('booking', { jadwal, success: null, error: null });
+  try {
+    const { rows: jadwal } = await db.query('SELECT DISTINCT poli FROM jadwal');
+    res.render('booking', { jadwal, success: null, error: null });
+  } catch (err) {
+    res.status(500).send('Error memuat halaman booking');
+  }
 });
 
-// Proses Booking (PostgreSQL pakai $1, $2, dst)
-// Tambahan: Sisipkan middleware upload.single('foto_ktp')
+// 3. Proses Simpan Booking (Menerima input teks dan file foto_ktp)
 app.post('/booking', upload.single('foto_ktp'), async (req, res) => {
   const { nama, nik, tanggal, poli, keluhan } = req.body;
   
-  // Mengambil path file yang diupload. Jika tidak ada file, nilainya null.
+  // Ambil lokasi file yang baru saja diupload
   const fotoUrl = req.file ? req.file.path : null; 
 
   try {
@@ -88,32 +101,49 @@ app.post('/booking', upload.single('foto_ktp'), async (req, res) => {
       'INSERT INTO bookings (nama, nik, tanggal, poli, keluhan, foto_ktp) VALUES ($1, $2, $3, $4, $5, $6)',
       [nama, nik, tanggal, poli, keluhan, fotoUrl]
     );
+    
     const { rows: jadwal } = await db.query('SELECT DISTINCT poli FROM jadwal');
-    res.render('booking', { jadwal, success: 'Booking berhasil!', error: null });
+    res.render('booking', { jadwal, success: 'Pendaftaran berhasil dikirim!', error: null });
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Terjadi kesalahan');
+    console.error('❌ Error Simpan Booking:', err);
+    const { rows: jadwal } = await db.query('SELECT DISTINCT poli FROM jadwal');
+    res.render('booking', { jadwal, success: null, error: 'Terjadi kesalahan pada database' });
   }
 });
 
-// Halaman Jadwal
+// 4. Halaman Daftar Jadwal
 app.get('/jadwal', async (req, res) => {
-  const { rows: jadwal } = await db.query('SELECT * FROM jadwal');
-  res.render('jadwal', { jadwal });
+  try {
+    const { rows: jadwal } = await db.query('SELECT * FROM jadwal');
+    res.render('jadwal', { jadwal });
+  } catch (err) {
+    res.status(500).send('Error memuat jadwal');
+  }
 });
 
-// Halaman Admin
+// 5. Halaman Dashboard Admin
 app.get('/admin', async (req, res) => {
-  const { rows: bookings } = await db.query('SELECT * FROM bookings ORDER BY created_at DESC');
-  res.render('admin', { bookings });
+  try {
+    const { rows: bookings } = await db.query('SELECT * FROM bookings ORDER BY created_at DESC');
+    res.render('admin', { bookings });
+  } catch (err) {
+    res.status(500).send('Error memuat dashboard admin');
+  }
 });
 
-// Update Status Booking
+// 6. Update Status (Setujui/Tolak) oleh Admin
 app.post('/admin/update-status', async (req, res) => {
   const { id, status } = req.body;
-  await db.query('UPDATE bookings SET status = $1 WHERE id = $2', [status, id]);
-  res.redirect('/admin');
+  try {
+    await db.query('UPDATE bookings SET status = $1 WHERE id = $2', [status, id]);
+    res.redirect('/admin');
+  } catch (err) {
+    res.status(500).send('Gagal update status');
+  }
 });
 
+// Jalankan Server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server jalan di http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server MedQueue berjalan di port ${PORT}`);
+});
